@@ -1,0 +1,209 @@
+comandos para criar e rodar um app react:
+
+npm create vite@5.5.2 . //cria o projeto
+npm install //instala oq é necessário
+npm run dev //roda o app em um servidor local
+
+package.json - arquivo de configuração da aplicação
+
+index.html - inicio da aplicação
+	Conteúdo inserido pelo react/Javascript (id = "root")
+	
+SPA - Single page aplication
+vantagens e SPA - Velocidade grande
+		- Experiência de usuário melhor (melhor performance)
+
+src/main.jsx - onde é renderizado o conteúdo da página (renderiza utilizando o GetElementId root)
+
+src/App.jsx - onde o app é desenvolvido
+Primeira função (tudo é feito em JS):
+
+function App() {
+  const message = "Hello World";
+  return <h1>{message}</h1>;
+}
+
+export default App;
+
+JSX - Mistura de JS com HTML
+
+useState é uma variável que vc altera no react que faz o componente atualizar a interface
+(util quando vc tem uma interação do usuário e precisa atualizar a interface)
+
+Comando de instalação de Tailwind
+
+npm install -D tailwindcss@3.4.10 postcss@8.4.41 autoprefixer@10.4.20 
+
+Comando para inicializar o Tailwind no projeto
+
+npx tailwindcss init -p 
+
+Para passar um valor para um componente, utiliza-se de props
+Tudo que vc passa no componente, vc tem acesso a utilizando {props.nomePropriedade}
+
+ao utilizar a função map para listar uma lista, é importante utilizar a propriedade key da seguinte forma:
+
+key = {task.id}
+
+O react utiliza internamente por questões de performance
+
+lucide é uma biblioteca de icons
+
+caso não queira usar o props desse modo:
+
+function Tasks(props) {}
+
+pode se receber o valor diretamente desse jeito:
+
+function Tasks({tasks, onTaskClicked, onDeleteTaskClicked}){}
+
+um atalho legal do vs code: ctrl + d seleciona mais de uma instância de texto, podendo assim deletar textos iguais no código todo rapidamente
+
+para atualizar a lista:
+
+setTask([...tasks, newTask]) 
+
+caso precise de um ID aleatório, existe uma biblioteca chamada uuid que fornece essa função 
+
+como criar rotas
+
+Como o react trabalha com SPA, não precisamos criar um HTML pra cada página, sempre terá um HTML
+
+Para trabalhar com rotas, é utilizado a biblioteca React Router onde ela gerencia todas as rotas
+
+para instalar, rode este comando NPM:
+
+npm install react-router-dom
+
+para utiliza-lo, deve se colocar este código no main.jsx
+
+import { createBrowserRouter } from "react-router-dom";
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <div>Hello World</div>,
+  },
+]);
+
+deve também importar o RouterProvider e substituir o <App /> por <RouterProvider router = {router} />
+
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import App from "./App.jsx";
+import "./index.css";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <div>Hello World</div>,
+  },
+]);
+
+createRoot(document.getElementById("root")).render(
+  <StrictMode>
+    <RouterProvider router={router} />
+  </StrictMode>
+);
+
+para renderizar o <App />, deve substituir o <div>Hello World</div> por <App />
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <App />,
+  },
+]);
+
+O path é basicamente a rota da sua aplicação
+
+queryparams é uma forma de acessar os dados passados pela URL. É utilizado um hook do react chamado useSearchParams()
+
+Exemplo de utilização:
+
+import { useSearchParams } from "react-router-dom";
+
+function TaskPage() {
+    const [searchParams] = useSearchParams();
+    const titulo = searchParams.get("titulo")
+    const descricao = searchParams.get("descricao")
+    return (
+    <div className="h-screen w-screen bg-slate-500 p-6">
+      <h1 className="text-3x1 text-slate-100 font-bold text-center">
+        Task Page
+      </h1>
+    </div>
+  );
+}
+
+export default TaskPage;
+
+Para chamar o router em um componente é só utilizar o hook:
+
+const navigate = useNavigate();
+
+deve se criar uma função para chamar o navigate e usar as querys parameters 
+
+function onSeeDetailsClicked(task){
+    navigates({`/task?titulo=${task.title}&descricao=${task.descricao}`})
+  }
+
+e chamar a função no onClick do botão que deve mandar para a outra rota
+
+onClick = {() => onSeeDetailsClicked(task)}
+
+Uma boa prática é usar o URLSearchParams para que seja feito os tratamentos necessário e não de nenhum conflito ao utilizar as querys parameters
+
+function onSeeDetailsClicked(task) {
+    const query = new URLSearchParams();
+    query.set("titulo", task.title);
+    query.set("descricao", task.description);
+    navigate(`/task?${query.toString()}`);
+  }
+
+useEffects - Um hook do react que executa uma função caso uma lista seja alterada (adicionar, remover, etc), importante para persistir dados
+
+Sintaxe: 
+useEffect(() => {
+
+  }, [Tasks])
+
+localStorage - localStorage.setItem("indentificador único", JSON/informação que desea salvar)
+localStorage.getItem("identificado único") //pega as informações do localStorage
+
+Consumindo API's com React - API Placerolder (API para dados de teste)
+
+É utilizado o useEffect() para persistir os dados de uma API no primeiro momento em que o usuário acessa a aplicação, como:
+
+useEffect(() = > {
+
+}, [])
+
+Deve ser passado para o hook uma lista vazia, ai sempre o usuário entrar na aplicação, a função será executada. Normalmente é utilizada essa técnica para consulta de API e banco de dados
+
+Bom método para chamar API's:
+
+const fetchTasks = async () => {
+      //Chamar API
+      const response = await fetch(
+        "https://jsonplaceholder.typicode.com/todos?_limit=10",
+        {
+          method: "GET",
+        }
+      );
+      const data = await response.json();
+      console.log(data);
+      //Pegar dados que ela retorna
+
+      //Armazena dados no state
+    };
+    fetchTasks();
+
+Quando vc está repetindo código, estilos, vc pode criar um componente para essa funcionalidade
+
+além disso, é possível usar essa funcionalidade no react:
+
+{...props} //É possivel fazer esse spread, todos os dados serão passados pelo pros, mas não será necessário adicionar ele ao input, tudo será adicionado automaticamente
+
+é possível pegar o conteúdo que é passado para dentro de uma tag HTML utilizando o {prop.children}
