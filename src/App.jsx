@@ -3,7 +3,9 @@ import Tasks from "./components/Tasks";
 import { useEffect, useState } from "react";
 
 function App() {
-  const [tasks, setTasks] = useState(JSON.parse(localStorage.getItem("tasks")));
+  const [tasks, setTasks] = useState(
+    JSON.parse(localStorage.getItem("tasks")) || []
+  );
 
   useEffect(() => {
     localStorage.setItem("tasks", JSON.stringify(tasks));
@@ -12,17 +14,15 @@ function App() {
   useEffect(() => {
     const fetchTasks = async () => {
       //Chamar API
-      const response = await fetch(
+      /* const response = await fetch(
         "https://jsonplaceholder.typicode.com/todos?_limit=10",
         {
           method: "GET",
         }
-      );
-
+      ); */
       //Pegar dados que ela retorna
-      const data = await response.json();
+      //const data = await response.json();
       //Armazena dados no state
-
       //Se quiser, você pode chamar uma API para pega as tarefas
       //setTasks(data);
     };
